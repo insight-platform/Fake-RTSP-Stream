@@ -1,0 +1,34 @@
+# docker run --name=rtsp-server --env=RTSP_PROTOCOLS=tcp -p 1935:1935 -p 8554:8554 -p 8888:8888 --restart=always --detach=true aler9/rtsp-simple-server
+# docker run --name=ffmpeg --volume=/home/ivan/testsrc.mpg:/testsrc.mpg --link rtsp-server --restart=always --detach=true jrottenberg/
+# ffmpeg -re -stream_loop -1 -i /testsrc.mpg -c copy -f rtsp rtsp://rtsp-server:8554/mystream
+
+version: "3.3"
+services:
+  rtsp-server:
+    ports:
+      - "1935:1935"
+      - "8554:8554"
+      - "8888:8888"
+    environment:
+      - RTSP_PROTOCOLS=tcp
+    image: aler9/rtsp-simple-server
+      
+  stream-sample:
+    image: jrottenberg/ffmpeg
+    links: 
+      - "rtsp-server:rtsp-server"
+    depends_on:
+      - rtsp-server
+    volumes:
+       - ./samples/testsrc.mpg:/tmp/file.mpg
+    command: -re -stream_loop -1 -i /tmp/file.mpg -c copy -f rtsp rtsp://rtsp-server:8554/stream-sample
+
+  maxim-1:
+    image: jrottenberg/ffmpeg
+    links:
+      - "rtsp-server:rtsp-server"
+    depends_on:
+      - rtsp-server
+    volumes:
+       - ./samples/output-maxim1.mp4:/tmp/file.mpg
+    command: -re -stream_loop -1 -i /tmp/file.mpg -c copy -f rtsp rtsp://rtsp-server:8554/maxim-1  
