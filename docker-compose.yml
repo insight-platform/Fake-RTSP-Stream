@@ -13,35 +13,25 @@ services:
       - RTSP_PROTOCOLS=tcp
     image: aler9/rtsp-simple-server
 
-  stream-sample:
+  looping-sample:
     image: jrottenberg/ffmpeg
     links:
       - "rtsp-server:rtsp-server"
     depends_on:
       - rtsp-server
     volumes:
-       - ./samples/testsrc.mpg:/tmp/file.mpg
-    command: -re -stream_loop -1 -i /tmp/file.mpg -c copy -f rtsp rtsp://rtsp-server:8554/stream-sample
-
-  maxim-1:
-    image: jrottenberg/ffmpeg
-    links:
-      - "rtsp-server:rtsp-server"
-    depends_on:
-      - rtsp-server
-    volumes:
-       - ./samples/output-maxim1.mp4:/tmp/file.mpg
-    command: -re -stream_loop -1 -i /tmp/file.mpg -c copy -f rtsp rtsp://rtsp-server:8554/maxim-1
+       - ./samples/output-maxim1.mp4:/tmp/file.mp4
+    command: -re -stream_loop -1 -i /tmp/file.mp4 -c copy -f rtsp rtsp://rtsp-server:8554/looping-sample
 
   prepare-input-files:
     image: python:slim-bullseye
     working_dir: /app
     volumes:
-       - ./input_files/:/tmp/
+       - ./samples/input_files/:/tmp/
        - ./scripts/list_input_files.py:/app/list_input_files.py
     command: python list_input_files.py /tmp/
 
-  input-files:
+  concatenated-sample:
     image: jrottenberg/ffmpeg
     links:
       - "rtsp-server:rtsp-server"
@@ -51,5 +41,5 @@ services:
       rtsp-server:
         condition: service_started
     volumes:
-       - ./input_files/:/tmp/
-    command: -re -f concat -i /tmp/concat.txt -c copy -f rtsp rtsp://rtsp-server:8554/input-files
+       - ./samples/input_files/:/tmp/
+    command: -re -f concat -i /tmp/concat.txt -c copy -f rtsp rtsp://rtsp-server:8554/concatenated-sample

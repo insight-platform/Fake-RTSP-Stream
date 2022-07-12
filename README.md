@@ -20,9 +20,9 @@ To run the streaming, type `docker-compose up` or `docker-compose up -d` if you 
 
 To get the access to streams use: `rtsp://machine-ip:8554/<stream-name>` URL.
 
-Compose services `stream-sample` and `maxim-1` start infinitely looping streams from sample videos.
+Compose service `looping-sample` starts infinitely looping stream from sample video.
 
-Compose service `input-files` starts a stream with every video from `input_files` directory in sequential order. Script assumes there are only videos in the directory, and these videos are all in the same format (able to be concatenated without reencoding).
+Compose service `concatenated-sample` starts a stream with every video from `samples/input_files` directory in sequential order. Script assumes there are only videos in the directory, and these videos are all in the same format (able to be concatenated without reencoding).
 
 ## Additional Configuration
 
