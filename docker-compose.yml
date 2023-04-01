@@ -13,15 +13,13 @@ services:
       - RTSP_PROTOCOLS=tcp
     image: aler9/rtsp-simple-server
 
-  looping-sample:
+  city-traffic:
     image: jrottenberg/ffmpeg
     links:
       - "rtsp-server:rtsp-server"
     depends_on:
       - rtsp-server
-    volumes:
-       - ./samples/output-maxim1.mp4:/tmp/file.mp4
-    command: -re -stream_loop -1 -i /tmp/file.mp4 -c copy -f rtsp rtsp://rtsp-server:8554/looping-sample
+    command: -re -stream_loop -1 -i https://eu-central-1.linodeobjects.com/savant-data/demo/Free_City_Street_Footage.mp4 -c copy -f rtsp rtsp://rtsp-server:8554/city-traffic
 
   prepare-input-files:
     image: python:slim-bullseye
