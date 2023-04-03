@@ -19,7 +19,7 @@ services:
       - "rtsp-server:rtsp-server"
     depends_on:
       - rtsp-server
-    command: -re -stream_loop -1 -i https://eu-central-1.linodeobjects.com/savant-data/demo/Free_City_Street_Footage.mp4 -c copy -f rtsp rtsp://rtsp-server:8554/city-traffic
+    command: -re -stream_loop -1 -i https://eu-central-1.linodeobjects.com/savant-data/demo/Free_City_Street_Footage.mp4 -c copy -bsf:v h264_mp4toannexb -f rtsp rtsp://rtsp-server:8554/city-traffic
 
   prepare-input-files:
     image: python:slim-bullseye
