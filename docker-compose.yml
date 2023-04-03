@@ -40,4 +40,4 @@ services:
         condition: service_started
     volumes:
        - ./samples/input_files/:/tmp/
-    command: -re -f concat -i /tmp/concat.txt -c copy -f rtsp rtsp://rtsp-server:8554/concatenated-sample
+    command: -re -f concat -i /tmp/concat.txt -c copy -bsf:v h264_mp4toannexb -f rtsp rtsp://rtsp-server:8554/concatenated-sample
