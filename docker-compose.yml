@@ -21,6 +21,16 @@ services:
       - rtsp-server
     command: -re -stream_loop -1 -i https://eu-central-1.linodeobjects.com/savant-data/demo/Free_City_Street_Footage.mp4 -c copy -bsf:v h264_mp4toannexb -f rtsp rtsp://rtsp-server:8554/city-traffic
 
+  local-loop:
+    image: linuxserver/ffmpeg:version-4.4-cli
+    links:
+      - "rtsp-server:rtsp-server"
+    depends_on:
+      - rtsp-server
+    volumes:
+      - ./samples/input_files/:/tmp/
+    command: -re -stream_loop -1 -i /tmp/testsrc_01.mpg -c copy -f rtsp rtsp://rtsp-server:8554/local-loop
+
   prepare-input-files:
     image: python:slim-bullseye
     working_dir: /app
@@ -40,4 +50,4 @@ services:
         condition: service_started
     volumes:
        - ./samples/input_files/:/tmp/
-    command: -re -f concat -i /tmp/concat.txt -c copy -bsf:v h264_mp4toannexb -f rtsp rtsp://rtsp-server:8554/concatenated-sample
+    command: -re -f concat -i /tmp/concat.txt -c copy -f rtsp rtsp://rtsp-server:8554/concatenated-sample
