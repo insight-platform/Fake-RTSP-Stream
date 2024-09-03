@@ -5,15 +5,28 @@
 version: "3.3"
 services:
   rtsp-server:
+    restart: unless-stopped
     ports:
       - "1935:1935"
       - "8554:8554"
       - "8888:8888"
     environment:
       - RTSP_PROTOCOLS=tcp
-    image: aler9/rtsp-simple-server
+    image: bluenviron/mediamtx
+
+#  webcam:
+#    restart: unless-stopped
+#    image: linuxserver/ffmpeg:version-4.4-cli
+#    devices:
+#      - /dev/video0:/dev/video0
+#    links:
+#      - "rtsp-server:rtsp-server"
+#    depends_on:
+#      - rtsp-server
+#    command: -f v4l2 -framerate 30 -video_size 1280x720 -i /dev/video0 -f rtsp rtsp://rtsp-server:8554/webcam
 
   city-traffic:
+    restart: unless-stopped
     image: linuxserver/ffmpeg:version-4.4-cli
     links:
       - "rtsp-server:rtsp-server"
@@ -22,6 +35,7 @@ services:
     command: -re -stream_loop -1 -i https://eu-central-1.linodeobjects.com/savant-data/demo/Free_City_Street_Footage.mp4 -c copy -bsf:v h264_mp4toannexb -f rtsp rtsp://rtsp-server:8554/city-traffic
 
   local-loop:
+    restart: unless-stopped
     image: linuxserver/ffmpeg:version-4.4-cli
     links:
       - "rtsp-server:rtsp-server"
@@ -41,6 +55,7 @@ services:
 
   concatenated-sample:
     image: linuxserver/ffmpeg:version-4.4-cli
+    restart: unless-stopped
     links:
       - "rtsp-server:rtsp-server"
     depends_on:
